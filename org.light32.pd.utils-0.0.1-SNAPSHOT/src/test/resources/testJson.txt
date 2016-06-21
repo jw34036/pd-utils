@@ -1,0 +1,1 @@
+{"version":"1","chicago":false,"name":"TestClass","numbers":["1","2","3","4","5","6","7","8","9","10"],"stringArray":["A","B","C","D","E F G"],"valueOfPi":"3.1415","testEnumValue":"FOO","memberObject":{"otherHello":"Hello","otherVersion":"5"},"testMap":{"99":"10000value","EFGH":"5678","ABCD":"1234"},"ageOfProgrammer":"39"}
