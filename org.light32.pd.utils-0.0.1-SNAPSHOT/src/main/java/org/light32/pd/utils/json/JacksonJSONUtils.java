@@ -1,11 +1,11 @@
 package org.light32.pd.utils.json;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 
 /**
  * Jackson implementation of JSONUtils
@@ -13,12 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author jwhitt
  *
  */
-public class JacksonJSONUtils implements JSONUtils {
+class JacksonJSONUtils implements JSONUtils {
 
-	private ObjectMapper providedMapper = null;
 	private final ObjectMapper defaultMapper;
-	
-	public JacksonJSONUtils() { 
+    private ObjectMapper providedMapper = null;
+
+    public JacksonJSONUtils() {
 		super();
 		defaultMapper = new ObjectMapper();
 		defaultMapper.enable(Feature.WRITE_NUMBERS_AS_STRINGS);

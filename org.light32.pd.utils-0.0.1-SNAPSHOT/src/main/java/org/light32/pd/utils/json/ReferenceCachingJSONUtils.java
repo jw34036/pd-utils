@@ -10,7 +10,7 @@ package org.light32.pd.utils.json;
  * @author jwhitt
  *
  */
-public class ReferenceCachingJSONUtils extends ReferenceJSONUtils {
+class ReferenceCachingJSONUtils extends ReferenceJSONUtils {
 
 	////////////////////////
 	// UNDER CONSTRUCTION //

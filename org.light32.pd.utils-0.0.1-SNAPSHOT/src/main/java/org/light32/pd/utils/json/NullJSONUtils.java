@@ -4,7 +4,7 @@ package org.light32.pd.utils.json;
  * @author jwhitt
  *
  */
-public class NullJSONUtils implements JSONUtils {
+class NullJSONUtils implements JSONUtils {
 
 	@Override
 	public String toJSON(Object obj) {

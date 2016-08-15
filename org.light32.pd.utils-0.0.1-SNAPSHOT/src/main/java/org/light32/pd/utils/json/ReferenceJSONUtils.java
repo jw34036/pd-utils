@@ -1,5 +1,10 @@
 package org.light32.pd.utils.json;
 
+import org.light32.pd.utils.StringUtils;
+
+import javax.json.Json;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -9,12 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.json.Json;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
-
-import org.light32.pd.utils.StringUtils;
 
 
 /**
@@ -85,8 +84,8 @@ class ReferenceJSONUtils implements JSONUtils {
 		}
 		
 		T newObj = klass.newInstance();
-		// use the JEE7 Json parser because I am not that insane
-		JsonParser parser = Json.createParser(new StringReader(jsonStr));
+        // use the JEE7 Json parser
+        JsonParser parser = Json.createParser(new StringReader(jsonStr));
 		String fieldName = "";
 		List<Object> arrayHolder = new ArrayList<Object>();
 		boolean inArray = false;
@@ -334,8 +333,8 @@ class ReferenceJSONUtils implements JSONUtils {
 				outBuffer.append("\"").append(componentType.cast(ret)).append("\",");
 			}
 		}
-		
-		outBuffer.deleteCharAt(outBuffer.length()-1).append("]");
+        // whack trailing comma
+        outBuffer.deleteCharAt(outBuffer.length()-1).append("]");
 		return outBuffer.toString();
 	}
 }

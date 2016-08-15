@@ -1,13 +1,10 @@
 package org.light32.pd.utils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.junit.Test;
 import org.light32.pd.utils.json.JSONUtils;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 
 /**
@@ -20,16 +17,8 @@ public class TestLab {
 
 	
 	@Test
-	public void testSerialize() { 
-		TestClass testObj = new TestClass(1);
-		System.out.println("Reference:");
-		System.out.println("----------------");
-		System.out.println(JSONUtils.REFERENCE.toJSON(testObj));
-
-		System.out.println("Jackson:");
-		System.out.println("----------------");
-		System.out.println(JSONUtils.JACKSON.toJSON(testObj));
-
+	public void testSha() {
+		System.out.println(StringUtils.sha256("abcdefghijklmnopqrstuvwxyz"));
 	}
 
 	
@@ -68,10 +57,6 @@ public class TestLab {
 		System.out.println("Deserialize[10000]: Jackson: start=["+(before_jax_d)+"] stop=["+(after_jax_d)+"] elapsed=["+(after_jax_d-before_jax_d)+"]");
 
 	}
-	
-	@Test
-	public void testHttpType() { 
-		
-	}
-	
+
+
 }
