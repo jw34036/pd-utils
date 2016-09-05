@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.light32.pd.utils;
+package org.light32.pd.utils.file;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

@@ -13,7 +13,7 @@ import java.io.IOException;
  * @author jwhitt
  *
  */
-class JacksonJSONUtils implements JSONUtils {
+public class JacksonJSONUtils {
 
 	private final ObjectMapper defaultMapper;
     private ObjectMapper providedMapper = null;
@@ -24,9 +24,8 @@ class JacksonJSONUtils implements JSONUtils {
 		defaultMapper.enable(Feature.WRITE_NUMBERS_AS_STRINGS);
 		defaultMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}
-	
-	@Override
-	public String toJSON(Object obj) {
+
+    public String toJSON(Object obj) {
 		try {
 			return mapper().writeValueAsString(obj);
 		} catch (JsonProcessingException e) {
@@ -35,7 +34,6 @@ class JacksonJSONUtils implements JSONUtils {
 		}
 	}
 
-	@Override
 	public <T> T fromJSON(Class<T> klass, String jsonStr) {
 		try {
 			return mapper().readValue(jsonStr, klass);

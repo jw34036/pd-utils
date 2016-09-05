@@ -51,9 +51,9 @@ public class StringUtils {
 			byte[] hash = digest.digest(base.getBytes("UTF-8"));
 			StringBuffer hexString = new StringBuffer();
 
-			for (int i = 0; i < hash.length; i++) {
-				String hex = Integer.toHexString(0xff & hash[i]);
-				if (hex.length() == 1) hexString.append('0');
+            for (byte aHash : hash) {
+                String hex = Integer.toHexString(0xff & aHash);
+                if (hex.length() == 1) hexString.append('0');
 				hexString.append(hex);
 			}
 
@@ -61,5 +61,16 @@ public class StringUtils {
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
-	}
+    }
+
+    public static String exactLength(String s, int target, char padChar) {
+        if (s.length() >= target) {
+            return s.substring(0, target);
+        }
+        // else
+        while (s.length() < target) {
+            s = s + padChar;
+        }
+        return s;
+    }
 }
