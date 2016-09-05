@@ -10,18 +10,18 @@ public class FlatFileField {
     /**
      * the name of the field.  This is used for marshalling and mapping.
      */
-    private String name;
+    private final String name;
 
     /**
      * width of the field in bytes
      */
-    private int width;
+    private final int width;
 
     /**
      * indicates if this field is filler or not.  if it is, it will be read
      * for file pointer positioning purposes but otherwise ignored.
      */
-    private boolean filler;
+    private final boolean filler;
 
     public FlatFileField(String name, int width) {
         this.name = name;
@@ -39,23 +39,11 @@ public class FlatFileField {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public boolean isFiller() {
         return filler;
-    }
-
-    public void setFiller(boolean filler) {
-        this.filler = filler;
     }
 }

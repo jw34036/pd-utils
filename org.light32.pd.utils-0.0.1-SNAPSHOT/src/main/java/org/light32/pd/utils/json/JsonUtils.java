@@ -13,14 +13,13 @@ import java.io.IOException;
  * @author jwhitt
  *
  */
-public class JacksonJSONUtils {
+public class JsonUtils {
 
 	private final ObjectMapper defaultMapper;
     private ObjectMapper providedMapper = null;
 
-    public JacksonJSONUtils() {
-		super();
-		defaultMapper = new ObjectMapper();
+    public JsonUtils() {
+        defaultMapper = new ObjectMapper();
 		defaultMapper.enable(Feature.WRITE_NUMBERS_AS_STRINGS);
 		defaultMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}

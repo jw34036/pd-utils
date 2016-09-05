@@ -3,7 +3,8 @@ package org.light32.pd.utils.file;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Unit test for SimpleFlatFileFormat
@@ -24,15 +25,6 @@ public class SimpleFlatFileFormatTest {
 
     }
 
-    @Test
-    public void recordParser() throws Exception {
-        assertNotNull(testFormat.recordParser());
-    }
-
-    @Test
-    public void recordBuilder() throws Exception {
-        assertNotNull(testFormat.recordBuilder());
-    }
 
     @Test
     public void addFieldTest() throws Exception {

@@ -12,15 +12,14 @@ import java.util.Map;
 public final class SimpleFlatFile extends FlatFile<Map<String, String>> {
 
     /**
-     * Constructor for SimpleFlatFile. This requires a SimpleFlatFileFormat and not just a FlatFileFormat, so
-     * that's why it's different.
-     *
-     * @param file
-     * @param format
+     * Constructor for SimpleFlatFile. This requires a SimpleFlatFileFormat and
+     * not just a FlatFileFormat, so that's why it's different.
+     *  @param file
      * @param mode
+     * @param format
      */
-    public SimpleFlatFile(File file, SimpleFlatFileFormat format, FileMode mode) {
-        super(file, format, mode);
+    public SimpleFlatFile(File file, FileMode mode, SimpleFlatFileFormat format) {
+        super(file, mode, format);
     }
 
 }

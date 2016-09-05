@@ -15,17 +15,73 @@ import java.util.stream.Stream;
 public class FlatFile<T> implements AutoCloseable {
 
     private static final long MIN_POS = 0;
+    private final RecordHandler<T> handler;
     private final FlatFileFormat format;
     private final FileMode mode;
     private File fileObj;
     private RandomAccessFile randomAccessFile;
 
-    public FlatFile(File file, FlatFileFormat format, FileMode mode) {
+    /**
+     * basic constructor only requires File and mode.
+     * <p>
+     * If you use this, the format cannot be leveraged for parsing and
+     * record seeking meta operations, so you'll need to handle those yourself
+     * by passing in functions to the relevant methods of this instance.
+     *
+     * @param file
+     * @param mode
+     */
+    public FlatFile(File file, FileMode mode) {
+        this.fileObj = file;
+        this.mode = mode;
+        this.format = null;
+        this.handler = null;
+    }
+
+    /**
+     * constructor taking a FlatFileFormat.
+     * <p>
+     * This constructor will also use the format passed in as
+     * the RecordHandler if it implements the interface.
+     * <p>
+     * this pattern is used in the provided flat file types and
+     * their formats as created by the FileFactory
+     *
+     * @param file
+     * @param mode
+     * @param format
+     */
+    public FlatFile(File file, FileMode mode, FlatFileFormat format) {
         this.fileObj = file;
         this.format = format;
+        if (format instanceof RecordHandler) {
+            this.handler = (RecordHandler<T>) format;
+        } else {
+            this.handler = null;
+        }
         this.mode = mode;
     }
 
+    /**
+     * constructor taking all discrete parameters.
+     *
+     * @param file
+     * @param mode
+     * @param format
+     * @param handler
+     */
+    public FlatFile(File file, FileMode mode, FlatFileFormat format, RecordHandler<T> handler) {
+        this.fileObj = file;
+        this.format = format;
+        this.handler = handler;
+        this.mode = mode;
+    }
+
+    //////////////////////////////////////////////////////////////////
+    //
+    // open, seek
+    //
+    //////////////////////////////////////////////////////////////////
 
     /**
      * opens the file, throwing an IllegalStateException if
@@ -34,7 +90,7 @@ public class FlatFile<T> implements AutoCloseable {
      * @throws IOException
      */
     public void open() throws IOException {
-        if (randomAccessFile != null) {
+        if (isOpen()) {
             throw new IllegalStateException("file is already open");
         }
         randomAccessFile = new RandomAccessFile(fileObj, mode.getModeStr());
@@ -91,36 +147,48 @@ public class FlatFile<T> implements AutoCloseable {
         randomAccessFile.seek(newPos);
     }
 
+    public void fwd(int p) throws IOException {
+        stepForward(p, true);
+    }
+
+    public void rwd(int p) throws IOException {
+        stepReverse(p, true);
+    }
+
+
     /**
-     * rewinds the randomAccessFile pointer to the previous record.
+     * rewinds the randomAccessFile pointer safely to the previous record.
      *
      * @throws IOException
      */
     public void prev() throws IOException {
-        stepReverse(1, true);
+        rwd(1);
     }
 
     /**
-     * advances the randomAccessFile pointer to the next record.
+     * advances the randomAccessFile pointer safely to the next record.
      *
      * @throws IOException
      */
     public void next() throws IOException {
-        stepForward(1, true);
+        fwd(1);
     }
 
+
+    //////////////////////////////////////////////////////////////////
     //
     // read methods
     //
+    //////////////////////////////////////////////////////////////////
 
     /**
      * reads the record without permanently changing the position of the randomAccessFile pointer.
-     * this method uses the format recordParser() to process the record.
+     * this method uses the handler recordParser() to process the record.
      *
      * @return
      */
     public T look() throws IOException {
-        T record = readRecord(format.recordParser());
+        T record = readRecord(handler::bytesToRecord);
         prev();
         return record;
     }
@@ -146,7 +214,7 @@ public class FlatFile<T> implements AutoCloseable {
      * @return
      */
     public T readRecord() throws IOException {
-        return readRecord(format.recordParser());
+        return readRecord(handler::bytesToRecord);
     }
 
     /**
@@ -166,8 +234,7 @@ public class FlatFile<T> implements AutoCloseable {
     /**
      * returns records from file as a Stream<T>
      * This is a very crude implementation that just uses Files.lines() to generate
-     * a stream, no buffered reads or anything are done.  if you have large files,
-     * you still should do it the hard way.
+     * a stream.  if you have large files, you still should do it the hard way.
      *
      * @param readCallback function to be used to parse records
      * @return Stream of flatfile type
@@ -181,18 +248,22 @@ public class FlatFile<T> implements AutoCloseable {
     }
 
     /**
-     * returns records from file as a Stream<T>
+     * returns records from file as a Stream<T>,
+     * using the handler's recordParser() as a callback
      *
      * @return
      * @throws IOException
      */
     public Stream<T> readStream() throws IOException {
-        return readStream(format.recordParser());
+        return readStream(handler::bytesToRecord);
     }
 
+    //////////////////////////////////////////////////////////////////
     //
     // read bytes as String methods
     //
+    //////////////////////////////////////////////////////////////////
+
 
     /**
      * read the next record into a String, and wind the randomAccessFile pointer back afterward
@@ -217,9 +288,12 @@ public class FlatFile<T> implements AutoCloseable {
         return randomAccessFile.readLine();
     }
 
+
+    //////////////////////////////////////////////////////////////////
     //
     // Write methods
     //
+    //////////////////////////////////////////////////////////////////
 
     /**
      * calls recordBuilder on the record,
@@ -241,7 +315,7 @@ public class FlatFile<T> implements AutoCloseable {
      * @return
      */
     public void writeRecord(T record) throws IOException {
-        writeRecord(format.recordBuilder(), record);
+        writeRecord(handler::recordToBytes, record);
     }
 
     /**
@@ -255,16 +329,62 @@ public class FlatFile<T> implements AutoCloseable {
         randomAccessFile.write(System.lineSeparator().getBytes());
     }
 
+
+    //////////////////////////////////////////////////////////////////
+    //
+    // state queries
+    //
+    //////////////////////////////////////////////////////////////////
+
+    /**
+     * returns true if the file is open, and has a
+     * valid file descriptor
+     *
+     * @return
+     * @throws IOException
+     */
+    public boolean isOpen() throws IOException {
+        return (randomAccessFile != null
+                && randomAccessFile.getChannel().isOpen());
+    }
+
+    /**
+     * returns current position in file
+     *
+     * @return
+     */
+    public long position() throws IOException {
+        return randomAccessFile.getFilePointer();
+    }
+
+
+    //////////////////////////////////////////////////////////////////
+    //
+    // close and cleanup
+    //
+    //////////////////////////////////////////////////////////////////
+
     @Override
     public void close() throws Exception {
         randomAccessFile.close();
     }
 
+    //////////////////////////////////////////////////////////////////
+    //
+    // getters and setters
+    //
+    //////////////////////////////////////////////////////////////////
+
     public String getPathname() {
         return fileObj.getAbsolutePath();
     }
 
-    public RandomAccessFile getRandomAccessFile() {
+    /**
+     * getter for local package use (unit/integration tests and API backchannel stuff)
+     *
+     * @return RandomAccessFile
+     */
+    RandomAccessFile getRandomAccessFile() {
         return randomAccessFile;
     }
 
@@ -272,9 +392,6 @@ public class FlatFile<T> implements AutoCloseable {
         this.randomAccessFile = randomAccessFile;
     }
 
-    public FlatFileFormat getFormat() {
-        return format;
-    }
 
 
 }

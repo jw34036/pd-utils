@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author jwhitt 8/27/16
  */
-public abstract class FlatFileFormat implements RecordToolbox {
+public class FlatFileFormat {
 
     /**
      * stores the system newline width
@@ -46,11 +46,9 @@ public abstract class FlatFileFormat implements RecordToolbox {
     public int getRecordWidth() {
         return recordWidth;
     }
-
     public int getLineWidth() {
         return (recordWidth + separatorWidth);
     }
-
     public List<FlatFileField> getFieldList() {
         return fieldList;
     }
