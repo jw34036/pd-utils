@@ -271,6 +271,48 @@ public class UnrollerTest {
         assertTheList(outList);
     }
 
+    @Test
+    public void testSpeed() {
+
+        // 12^5
+        List<String> input = getStringList(248832);
+        List<String> outList = new ArrayList<>();
+
+        long start4 = System.currentTimeMillis();
+        for (int i = 0; i < input.size(); i++) {
+            outList.add(input.get(i) + "processed");
+        }
+        long stop4 = System.currentTimeMillis();
+        System.out.println("C style for() elapsed = " + (stop4 - start4));
+
+        outList.clear();
+
+        long starte = System.currentTimeMillis();
+        for (String s : input) {
+            outList.add(s + "processed");
+        }
+        long stope = System.currentTimeMillis();
+        System.out.println("iterator for() elapsed = " + (stope - starte));
+
+        outList.clear();
+
+        long start1 = System.currentTimeMillis();
+        input.stream().forEach((s) -> {
+            outList.add(s + "processed");
+        });
+        long stop1 = System.currentTimeMillis();
+        System.out.println("stream elapsed = " + (stop1 - start1));
+
+
+        outList.clear();
+        long start = System.currentTimeMillis();
+        Unroller.x12(input, (s) -> {
+            outList.add(s + "processed");
+        });
+        long stop = System.currentTimeMillis();
+        System.out.println("x12 elapsed = " + (stop - start));
+    }
+
     ////
     // helpers
     ////

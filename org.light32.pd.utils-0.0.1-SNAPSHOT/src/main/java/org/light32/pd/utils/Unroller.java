@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 /**
  * provides unrolled loops.  An unrolled loop is a loop that processes multiple entries of an array or list at once.
+ *
  * Since the point of this technique is efficiency by use of a loop block that avoids dynamic code in each iteration,
  * this requires some duplication.
  * <p>
