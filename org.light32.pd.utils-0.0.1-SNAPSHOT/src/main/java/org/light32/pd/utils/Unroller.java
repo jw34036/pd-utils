@@ -10,8 +10,8 @@ import java.util.function.Consumer;
  * this requires some duplication.
  * <p>
  * Each xN method will process the List N times per iteration by calling the supplied Consumer.
- * It is up to the user to avoid calling a method that will leave remainders - doing so will
- * throw exceptions.  the gfac() utility method
+ * bounds checking will be done on each call to ensure that a List with a size not divisible by N can be processed
+ * without error.
  *
  * @author jwhitt 9/14/16
  */
